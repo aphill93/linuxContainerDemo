@@ -29,6 +29,6 @@ jobs:
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
-            ghcr.io/shivacode-2/labview:2025q3-linux-beta \
+            nationalinstruments/labview:latest-linux \
             bash -c "cd /workspace && chmod +x runlabview.sh && ./runlabview.sh"
 
