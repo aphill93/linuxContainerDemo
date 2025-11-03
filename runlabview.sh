@@ -19,7 +19,8 @@ echo "DirectorytoCompile: $MASSCOMPILE_DIR"
 OUTPUT_MASSCOMPILE=$(LabVIEWCLI -LogToConsole TRUE \
 -OperationName MassCompile \
 -DirectoryToCompile $MASSCOMPILE_DIR \
--LabVIEWPath $LABVIEW_PATH)
+-LabVIEWPath $LABVIEW_PATH \ 
+-Verbosity Diagnostic)
 
 echo " "
 echo "Done Running Masscompile Operation"
