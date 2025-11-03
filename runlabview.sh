@@ -10,7 +10,7 @@ if [ ! -f "$CONFIG_FILE" ]; then
   exit 1
 fi
 
-
+mkdir -p "/tmp/natinst"
 echo "1" > /tmp/natinst/LVContainer.txt
 
 echo "Running LabVIEWCLI MassCompile with following parameters:"
