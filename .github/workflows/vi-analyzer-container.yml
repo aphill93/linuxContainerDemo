@@ -23,7 +23,7 @@ jobs:
           #password: ${{ secrets.GHCR_PAT }}
 
       - name: Pull Docker Image from Docker Hub
-        run: docker pull nationalinstruments/labview:latest-linux
+        run: docker pull nationalinstruments/labview:2025q3-linux
 
       - name: Run LabVIEWCLI Operations
         run: |
