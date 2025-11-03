@@ -11,6 +11,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 
+echo "1" > /tmp/natinst/LVContainer.txt
+
 echo "Running LabVIEWCLI MassCompile with following parameters:"
 echo "DirectorytoCompile: $MASSCOMPILE_DIR"
 
