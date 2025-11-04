@@ -2,6 +2,7 @@
 CONFIG_FILE='/workspace/Test-VIs/VIAnalyzerCfgFile.viancfg'
 REPORT_PATH='/usr/local/natinst/ContainerExamples/Results.txt'
 MASSCOMPILE_DIR='/workspace/Test-VIs'
+LABVIEW_PATH='/usr/local/natinst/LabVIEW-2025-64/labviewprofull'
 
 # Verify that the configuration file exists.
 if [ ! -f "$CONFIG_FILE" ]; then
