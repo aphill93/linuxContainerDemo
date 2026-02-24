@@ -1,0 +1,40 @@
+name: VI Compare
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  run-vi-compare:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute Changed Files
+        id: changed-files
+        run: |
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          echo "Changed files:"
+          echo "$CHANGED"
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Pull Docker Image from Docker Hub
+        run: docker pull nationalinstruments/labview:2025q3-linux
+
+      - name: Run VICompare on Changed Files
+        run: |
+          docker run --rm \
+            -e CHANGED_FILES="${{ steps.changed-files.outputs.files }}" \
+            -v "${{ github.workspace }}:/workspace" \
+            nationalinstruments/labview:2025q3-linux \
+            bash -c "cd /workspace && chmod +x runvicompare.sh && ./runvicompare.sh"
