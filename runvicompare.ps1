@@ -43,14 +43,15 @@ foreach ($file in $files) {
 
     Write-Host "Running LabVIEWCLI CreateComparisonReport for: $file"
 
-    # -o overwrites an existing report file; -c continues if LabVIEW is already open.
+    # -o overwrites an existing report file; -c creates the report directory if necessary.
+    # -nobdcosm & -nofppos omit non-functional changes from diagram and panel respectively
     & LabVIEWCLI `
         -OperationName CreateComparisonReport `
         -vi1 "$VI1" `
         -vi2 "$VI2" `
         -reportType "HTMLSingleFile" `
         -reportPath "$REPORT_PATH" `
-        -o -c
+        -o -c -nobdcosm -nofppos
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "X CreateComparisonReport failed for $file (exit code $LASTEXITCODE)"
