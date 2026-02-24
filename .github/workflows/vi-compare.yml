@@ -9,7 +9,7 @@ on:
 
 jobs:
   run-vi-compare:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: read
     steps:
@@ -18,23 +18,31 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Compute Changed Files
+      - name: Compute Changed Files and Prepare Base Versions
         id: changed-files
+        shell: pwsh
         run: |
-          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          echo "Changed files:"
-          echo "$CHANGED"
-          echo "files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          $changed = git diff --name-only "origin/${{ github.base_ref }}...HEAD" |
+            Where-Object { $_ -match '\.vi$' }
+          Write-Host "Changed VI files:"
+          $changed | ForEach-Object { Write-Host "  $_" }
+
+          # Create a git worktree for the base branch so binary .vi files can be
+          # compared safely without manual extraction.
+          git worktree add "${{ github.workspace }}\vi-base" "origin/${{ github.base_ref }}"
+
+          # Write the list to a file so the container can read it without
+          # multiline environment-variable encoding issues.
+          $changed | Out-File -FilePath "${{ github.workspace }}\changed-files.txt" `
+            -Encoding utf8NoBOM
 
       - name: Pull Docker Image from Docker Hub
-        run: docker pull nationalinstruments/labview:2025q3-linux
+        run: docker pull nationalinstruments/labview:2026q1-windows
 
       - name: Run VICompare on Changed Files
+        shell: pwsh
         run: |
-          docker run --rm \
-            -e CHANGED_FILES="${{ steps.changed-files.outputs.files }}" \
-            -v "${{ github.workspace }}:/workspace" \
-            nationalinstruments/labview:2025q3-linux \
-            bash -c "cd /workspace && chmod +x runvicompare.sh && ./runvicompare.sh"
+          docker run --rm `
+            -v "${{ github.workspace }}:C:\workspace" `
+            nationalinstruments/labview:2026q1-windows `
+            powershell -File C:\workspace\runvicompare.ps1
