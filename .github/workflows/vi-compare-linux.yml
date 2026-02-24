@@ -1,0 +1,84 @@
+name: VI Compare (Linux)
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  run-vi-compare-linux:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute Changed Files and Prepare Base Versions
+        run: |
+          CHANGED=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep '\.vi$' || true)
+          echo "Changed VI files:"
+          echo "$CHANGED"
+
+          # Create a git worktree for the base branch so binary .vi files can be
+          # compared safely without manual extraction.
+          git worktree add "${{ github.workspace }}/vi-base" "origin/${{ github.base_ref }}"
+
+          # Write the list to a file so the container can read it.
+          echo "$CHANGED" > "${{ github.workspace }}/changed-files.txt"
+
+      - name: Pull Docker Image from Docker Hub
+        run: docker pull nationalinstruments/labview:2026q1-linux
+
+      - name: Run CreateComparisonReport on Changed Files
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            nationalinstruments/labview:2026q1-linux \
+            bash -c "chmod +x /workspace/runvicompare.sh && /workspace/runvicompare.sh"
+
+      - name: Upload Comparison Reports
+        id: upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vi-compare-reports-linux
+          path: vi-compare-reports/
+          if-no-files-found: ignore
+
+      - name: Post PR Comment with Report Links
+        if: always() && steps.upload.outputs.artifact-url != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const changedFilesPath = path.join(process.env.GITHUB_WORKSPACE, 'changed-files.txt');
+            if (!fs.existsSync(changedFilesPath)) return;
+
+            const changedFiles = fs.readFileSync(changedFilesPath, 'utf8')
+              .split('\n')
+              .map(f => f.trim())
+              .filter(f => f.endsWith('.vi'));
+
+            if (changedFiles.length === 0) return;
+
+            const artifactUrl = '${{ steps.upload.outputs.artifact-url }}';
+            let body = '### VI Comparison Reports (Linux)\n\n';
+            body += '| VI File | Report |\n|---------|--------|\n';
+            for (const file of changedFiles) {
+              const baseName = path.basename(file, '.vi');
+              body += `| \`${file}\` | [${baseName}-diff-report.html](${artifactUrl}) |\n`;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body
+            });

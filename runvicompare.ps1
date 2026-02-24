@@ -26,18 +26,18 @@ $FAILED = 0
 foreach ($file in $files) {
     # Use Join-Path to combine base and relative paths, handling any mix of
     # forward/backward slashes produced by git on Windows.
-    $VI1 = Join-Path "C:\workspace\vi-base" $file
-    $VI2 = Join-Path "C:\workspace" $file
+    $VI_BASE = Join-Path "C:\workspace\vi-base" $file
+    $VI_HEAD = Join-Path "C:\workspace" $file
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($file)
     $REPORT_PATH = Join-Path $REPORT_DIR "$baseName-diff-report.html"
 
-    if (-not (Test-Path $VI2)) {
-        Write-Host "Warning: Head version not found: $VI2, skipping."
+    if (-not (Test-Path $VI_HEAD)) {
+        Write-Host "Warning: Head version not found: $VI_HEAD, skipping."
         continue
     }
 
-    if (-not (Test-Path $VI1)) {
-        Write-Host "Warning: Base version not found: $VI1, skipping."
+    if (-not (Test-Path $VI_BASE)) {
+        Write-Host "Warning: Base version not found: $VI_BASE, skipping."
         continue
     }
 
@@ -47,8 +47,8 @@ foreach ($file in $files) {
     # -nobdcosm & -nofppos omit non-functional changes from diagram and panel respectively
     & LabVIEWCLI `
         -OperationName CreateComparisonReport `
-        -vi1 "$VI1" `
-        -vi2 "$VI2" `
+        -vi1 "$VI_BASE" `
+        -vi2 "$VI_HEAD" `
         -reportType "HTMLSingleFile" `
         -reportPath "$REPORT_PATH" `
         -o -c -nobdcosm -nofppos
