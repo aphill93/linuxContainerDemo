@@ -43,6 +43,7 @@ while IFS= read -r file; do
   OUTPUT=$(LabVIEWCLI \
     -LabVIEWPath $LABVIEW_PATH \
     -LogToConsole TRUE \
+    -Headless \
     -OperationName CreateComparisonReport \
     -vi1 "$VI_BASE" \
     -vi2 "$VI_HEAD" \
