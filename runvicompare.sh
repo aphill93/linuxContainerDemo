@@ -40,14 +40,15 @@ while IFS= read -r file; do
   echo "Running LabVIEWCLI CreateComparisonReport for: $file"
 
   # -o overwrites an existing report file; -c continues if LabVIEW is already open.
-  LabVIEWCLI -LogToConsole TRUE \
+  OUTPUT=$(LabVIEWCLI \
+    -LabVIEWPath $LABVIEW_PATH \
+    -LogToConsole TRUE \
     -OperationName CreateComparisonReport \
     -vi1 "$VI_BASE" \
     -vi2 "$VI_HEAD" \
     -reportType "HTMLSingleFile" \
     -reportPath "$REPORT_PATH" \
-    -LabVIEWPath $LABVIEW_PATH \
-    -o -c
+    -o -c)
 
   EXIT_CODE=$?
   if [ $EXIT_CODE -ne 0 ]; then
