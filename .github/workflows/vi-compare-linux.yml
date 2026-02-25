@@ -33,13 +33,13 @@ jobs:
           echo "$CHANGED" > "${{ github.workspace }}/changed-files.txt"
 
       - name: Pull Docker Image from Docker Hub
-        run: docker pull nationalinstruments/labview:2025q3-linux
+        run: docker pull nationalinstruments/labview:2026q1-linux
 
       - name: Run CreateComparisonReport on Changed Files
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
-            nationalinstruments/labview:2025q3-linux \
+            nationalinstruments/labview:2025q1-linux \
             bash -c "chmod +x /workspace/runvicompare.sh && /workspace/runvicompare.sh"
 
       - name: Upload Comparison Reports
