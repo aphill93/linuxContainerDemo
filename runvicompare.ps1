@@ -46,6 +46,9 @@ foreach ($file in $files) {
     # -o overwrites an existing report file; -c creates the report directory if necessary.
     # -nobdcosm & -nofppos omit non-functional changes from diagram and panel respectively
     & LabVIEWCLI `
+        -LabVIEWPath "$LabVIEWPath" `
+        -LogToConsole TRUE `
+        -Headless `
         -OperationName CreateComparisonReport `
         -vi1 "$VI_BASE" `
         -vi2 "$VI_HEAD" `
