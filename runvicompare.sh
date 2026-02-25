@@ -4,6 +4,7 @@
 
 CHANGED_FILES_FILE='/workspace/changed-files.txt'
 REPORT_DIR='/workspace/vi-compare-reports'
+LABVIEW_PATH='/usr/local/natinst/LabVIEW-2025-64/labviewprofull'
 
 mkdir -p "$REPORT_DIR"
 mkdir -p "/tmp/natinst"
@@ -39,12 +40,13 @@ while IFS= read -r file; do
   echo "Running LabVIEWCLI CreateComparisonReport for: $file"
 
   # -o overwrites an existing report file; -c continues if LabVIEW is already open.
-  LabVIEWCLI \
+  LabVIEWCLI -LogToConsole TRUE \
     -OperationName CreateComparisonReport \
     -vi1 "$VI_BASE" \
     -vi2 "$VI_HEAD" \
     -reportType "HTMLSingleFile" \
     -reportPath "$REPORT_PATH" \
+    -LabVIEWPath $LABVIEW_PATH) \
     -o -c
 
   EXIT_CODE=$?
