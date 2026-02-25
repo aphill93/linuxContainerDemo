@@ -57,7 +57,7 @@ foreach ($file in $files) {
         Write-Host "X CreateComparisonReport failed for $file (exit code $LASTEXITCODE)"
         $FAILED++
     } else {
-        Write-Host "✔ CreateComparisonReport succeeded for $file"
+        Write-Host "[OK] CreateComparisonReport succeeded for $file"
     }
 }
 
@@ -65,6 +65,6 @@ if ($FAILED -gt 0) {
     Write-Host "X $FAILED file(s) failed comparison. Exiting with error."
     exit 1
 } else {
-    Write-Host "✔ All comparison reports generated successfully."
+    Write-Host "[OK] All comparison reports generated successfully."
     exit 0
 }
