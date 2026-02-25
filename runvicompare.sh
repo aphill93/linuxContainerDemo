@@ -46,7 +46,7 @@ while IFS= read -r file; do
     -vi2 "$VI_HEAD" \
     -reportType "HTMLSingleFile" \
     -reportPath "$REPORT_PATH" \
-    -LabVIEWPath $LABVIEW_PATH) \
+    -LabVIEWPath $LABVIEW_PATH \
     -o -c
 
   EXIT_CODE=$?
