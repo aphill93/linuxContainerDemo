@@ -4,7 +4,7 @@
 
 CHANGED_FILES_FILE='/workspace/changed-files.txt'
 REPORT_DIR='/workspace/vi-compare-reports'
-LABVIEW_PATH='/usr/local/natinst/LabVIEW-2025-64/labviewprofull'
+LABVIEW_PATH='/usr/local/natinst/LabVIEW-2026-64/labviewprofull'
 
 mkdir -p "$REPORT_DIR"
 mkdir -p "/tmp/natinst"
