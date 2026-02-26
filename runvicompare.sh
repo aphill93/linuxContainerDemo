@@ -42,10 +42,10 @@ while IFS= read -r file; do
   # -o overwrites an existing report file; -c continues if LabVIEW is already open.
   # Run directly (not captured) so all LabVIEWCLI output is visible in the Actions log.
   LabVIEWCLI \
+    -OperationName CreateComparisonReport \
     -LabVIEWPath $LABVIEW_PATH \
     -LogToConsole TRUE \
     -Headless \
-    -OperationName CreateComparisonReport \
     -vi1 "$VI_BASE" \
     -vi2 "$VI_HEAD" \
     -reportType "HTMLSingleFile" \
