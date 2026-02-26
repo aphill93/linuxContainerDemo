@@ -40,7 +40,8 @@ while IFS= read -r file; do
   echo "Running LabVIEWCLI CreateComparisonReport for: $file"
 
   # -o overwrites an existing report file; -c continues if LabVIEW is already open.
-  OUTPUT=$(LabVIEWCLI \
+  # Run directly (not captured) so all LabVIEWCLI output is visible in the Actions log.
+  LabVIEWCLI \
     -LabVIEWPath $LABVIEW_PATH \
     -LogToConsole TRUE \
     -Headless \
@@ -49,11 +50,14 @@ while IFS= read -r file; do
     -vi2 "$VI_HEAD" \
     -reportType "HTMLSingleFile" \
     -reportPath "$REPORT_PATH" \
-    -o -c)
+    -o -c
 
   EXIT_CODE=$?
   if [ $EXIT_CODE -ne 0 ]; then
     echo "✖ CreateComparisonReport failed for $file (exit code $EXIT_CODE)"
+    FAILED=$((FAILED + 1))
+  elif [ ! -f "$REPORT_PATH" ]; then
+    echo "✖ CreateComparisonReport exited 0 but report was not created: $REPORT_PATH"
     FAILED=$((FAILED + 1))
   else
     echo "✔ CreateComparisonReport succeeded for $file"
