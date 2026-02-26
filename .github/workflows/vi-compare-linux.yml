@@ -39,7 +39,7 @@ jobs:
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
-            nationalinstruments/labview:2025q1-linux \
+            nationalinstruments/labview:2026q1-linux \
             bash -c "chmod +x /workspace/runvicompare.sh && /workspace/runvicompare.sh"
 
       - name: Upload Comparison Reports

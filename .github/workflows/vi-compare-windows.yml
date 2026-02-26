@@ -1,11 +1,11 @@
 name: VI Compare (Windows)
 
-on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+# on:
+#   pull_request:
+#     types:
+#       - opened
+#       - synchronize
+#       - reopened
 
 jobs:
   run-vi-compare-windows:
