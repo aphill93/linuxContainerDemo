@@ -118,7 +118,7 @@ while read -r status file; do
     EXIT_CODE=$?
 
   else
-    echo "Skipping unrecognised status '$status' for: $file"
+    echo "Skipping unrecognized status '$status' for: $file"
     continue
   fi
 

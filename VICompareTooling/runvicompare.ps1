@@ -111,12 +111,15 @@ foreach ($line in $lines) {
             -Headless
 
     } else {
-        Write-Host "Skipping unrecognised status '$status' for: $file"
+        Write-Host "Skipping unrecognized status '$status' for: $file"
         continue
     }
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "X LabVIEWCLI failed for $file (exit code $LASTEXITCODE)"
+        $FAILED++
+    } elseif (-not (Test-Path $REPORT_PATH)) {
+        Write-Host "X LabVIEWCLI exited 0 but report was not created: $REPORT_PATH"
         $FAILED++
     } else {
         Write-Host "[OK] Report generated for $file"

@@ -4,12 +4,12 @@ name: VI Compare (Windows)
 #   Go to Settings → Pages → Build and deployment → Source → GitHub Actions → Save.
 # Without this the "Deploy to GitHub Pages" step will fail with a clear error message.
 
-# on:
-#   pull_request:
-#     types:
-#       - opened
-#       - synchronize
-#       - reopened
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   run-vi-compare-windows:
@@ -58,7 +58,7 @@ jobs:
           docker run --rm `
             -v "${{ github.workspace }}:C:\workspace" `
             nationalinstruments/labview:2026q1-windows `
-            powershell -File C:\workspace\runvicompare.ps1
+            powershell -File C:\workspace\VICompareTooling\runvicompare.ps1
 
       - name: Upload reports to GitHub Pages
         id: upload-pages
@@ -130,7 +130,7 @@ jobs:
               const changeLabel = status === 'A' ? 'Added'
                                 : status === 'D' ? 'Deleted'
                                 : 'Modified';
-              body += `| \`${file}\` | ${changeLabel} | [${reportFile}](${base}${reportFile}) |\n`;
+              body += `| \`${file}\` | ${changeLabel} | [${reportFile}](${base}${encodeURIComponent(reportFile)}) |\n`;
             }
 
             await github.rest.issues.createComment({
