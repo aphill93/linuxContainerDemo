@@ -47,12 +47,12 @@ while IFS= read -r file; do
     -OperationName CreateComparisonReport \
     -LabVIEWPath $LABVIEW_PATH \
     -LogToConsole TRUE \
-    -Headless \
     -vi1 "$VI_BASE" \
     -vi2 "$VI_HEAD" \
     -reportType "HTMLSingleFile" \
     -reportPath "$REPORT_PATH" \
-    -o -c
+    -o -c -nobdcosm \
+    -Headless
 
   EXIT_CODE=$?
   if [ $EXIT_CODE -ne 0 ]; then

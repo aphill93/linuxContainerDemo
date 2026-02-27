@@ -50,12 +50,12 @@ foreach ($file in $files) {
         -OperationName CreateComparisonReport `
         -LabVIEWPath "$LabVIEWPath" `
         -LogToConsole TRUE `
-        -Headless `
         -vi1 "$VI_BASE" `
         -vi2 "$VI_HEAD" `
         -reportType "HTMLSingleFile" `
         -reportPath "$REPORT_PATH" `
-        -o -c -nobdcosm -nofppos
+        -o -c -nobdcosm `
+        -Headless
 
     if ($LASTEXITCODE -ne 0) {
         Write-Host "X CreateComparisonReport failed for $file (exit code $LASTEXITCODE)"
