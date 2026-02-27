@@ -28,10 +28,13 @@ jobs:
       - name: Compute Changed Files and Prepare Base Versions
         shell: pwsh
         run: |
-          $changed = git diff --name-only "origin/${{ github.base_ref }}...HEAD" |
+          # Write tab-separated STATUS<TAB>FILE lines for changed .vi files.
+          # STATUS: A=added, D=deleted, M=modified.
+          $lines = git diff --name-status "origin/${{ github.base_ref }}...HEAD" |
             Where-Object { $_ -match '\.vi$' }
+
           Write-Host "Changed VI files:"
-          $changed | ForEach-Object { Write-Host "  $_" }
+          $lines | ForEach-Object { Write-Host "  $_" }
 
           # Create a git worktree for the base branch so binary .vi files can be
           # compared safely without manual extraction.
@@ -39,10 +42,10 @@ jobs:
 
           # Write the list to a file so the container can read it without
           # multiline environment-variable encoding issues.
-          if ($null -eq $changed) {
+          if ($null -eq $lines) {
             New-Item -ItemType File -Path "${{ github.workspace }}\changed-files.txt" -Force | Out-Null
           } else {
-            $changed | Out-File -FilePath "${{ github.workspace }}\changed-files.txt" `
+            $lines | Out-File -FilePath "${{ github.workspace }}\changed-files.txt" `
               -Encoding utf8NoBOM
           }
 
@@ -100,22 +103,34 @@ jobs:
             const changedFilesPath = path.join(process.env.GITHUB_WORKSPACE, 'changed-files.txt');
             if (!fs.existsSync(changedFilesPath)) return;
 
-            const changedFiles = fs.readFileSync(changedFilesPath, 'utf8')
+            // Each line is: STATUS\tpath/to/file.vi
+            // STATUS: A=added, D=deleted, M=modified
+            const entries = fs.readFileSync(changedFilesPath, 'utf8')
               .split('\n')
-              .map(f => f.trim())
-              .filter(f => f.endsWith('.vi'));
+              .map(l => l.trim())
+              .filter(l => l.includes('\t') && l.endsWith('.vi'))
+              .map(l => {
+                const [status, file] = l.split('\t', 2);
+                return { status: status.trim(), file: file.trim() };
+              });
 
-            if (changedFiles.length === 0) return;
+            if (entries.length === 0) return;
 
             const pagesUrl = '${{ steps.deploy-pages.outputs.page_url }}';
             const base = pagesUrl.endsWith('/') ? pagesUrl : pagesUrl + '/';
 
             let body = '### VI Comparison Reports (Windows)\n\n';
-            body += '| VI File | Report |\n|---------|--------|\n';
-            for (const file of changedFiles) {
+            body += '| VI File | Change | Report |\n|---------|--------|--------|\n';
+            for (const { status, file } of entries) {
               const baseName = path.basename(file, '.vi');
-              const reportFile = `${baseName}-diff-report.html`;
-              body += `| \`${file}\` | [${reportFile}](${base}${reportFile}) |\n`;
+              const isModified = status === 'M';
+              const reportFile = isModified
+                ? `${baseName}-diff-report.html`
+                : `${baseName}-print-report.html`;
+              const changeLabel = status === 'A' ? 'Added'
+                                : status === 'D' ? 'Deleted'
+                                : 'Modified';
+              body += `| \`${file}\` | ${changeLabel} | [${reportFile}](${base}${reportFile}) |\n`;
             }
 
             await github.rest.issues.createComment({
