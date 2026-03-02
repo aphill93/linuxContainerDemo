@@ -1,5 +1,5 @@
 #!/bin/bash
-CONFIG_FILE='/workspace/Test-VIs/Test-VIs/VIAnalyzerCfgFile.viancfg'
+CONFIG_FILE='/workspace/Test-VIs/Test-VIs/viaPassCase.viancfg'
 REPORT_PATH='/usr/local/natinst/ContainerExamples/Results.txt'
 MASSCOMPILE_DIR='/workspace/Test-VIs'
 LABVIEW_PATH='/usr/local/natinst/LabVIEW-2025-64/labviewprofull'
