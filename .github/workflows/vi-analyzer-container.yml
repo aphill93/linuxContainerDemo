@@ -1,11 +1,11 @@
 name: Run LabVIEWCLI on Linux Container
 
-# on:
-#   pull_request:
-#     types:
-#       - opened
-#       - synchronize
-#       - reopened
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   run-vi-analyzer:
